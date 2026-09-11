@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استوديو تحويل وتنسيق المستندات | Document Conversion Studio</title>
+    <!-- خطوط جوجل الكلاسيكية -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+    <!-- مكتبة jsPDF لتصدير ملفات PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #2b2621;
+            --card-bg: #fdfbf7;
+            --accent-gold: #c5a059;
+            --accent-gold-hover: #b08b46;
+            --text-dark: #2c2416;
+            --text-muted: #7d7060;
+            --border-classic: #d4c5b0;
+            --paper-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Amiri', serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#3a332d 1px, transparent 0);
+            background-size: 24px 24px;
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* شبكة الصفحة الرئيسية لتقسيم المساحات الإعلانية والمركز */
+        .page-layout {
+            display: grid;
+            grid-template-columns: 160px 1fr 160px;
+            gap: 20px;
+            max-width: 1280px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--accent-gold);
+            padding-bottom: 15px;
+        }
+
+        header h1 {
+            font-family: 'Aref Ruqaa', serif;
+            color: var(--accent-gold);
+            font-size: 34px;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        header p {
+            color: #d4c5b0;
+            font-size: 15px;
+            font-style: italic;
+        }
+
+        /* تنسيق المساحات الإعلانية */
+        .ad-banner {
+            background-color: rgba(253, 251, 247, 0.05);
+            border: 1px dashed var(--accent-gold);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+            font-size: 13px;
+            font-family: 'Amiri', serif;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .ad-top, .ad-bottom {
+            width: 100%;
+            height: 90px;
+        }
+
+        /* الإعلانات الجانبية العمودية */
+        .ad-side {
+            width: 160px;
+            height: 600px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .main-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-classic);
+            border-radius: 4px;
+            padding: 30px;
+            box-shadow: var(--paper-shadow);
+            position: relative;
+        }
+
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border: 1px solid var(--border-classic);
+            pointer-events: none;
+        }
+
+        /* شريط الترحيب والتوجيه للمستخدم */
+        .user-welcome {
+            background: #f7f2ea;
+            border-right: 4px solid var(--accent-gold);
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            border-radius: 2px;
+            font-size: 15px;
+            color: var(--text-dark);
+        }
+
+        /* شريط الإحصائيات */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f7f2ea;
+            border: 1px solid var(--border-classic);
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--accent-gold);
+            font-family: 'Aref Ruqaa', serif;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* منطقة النص */
+        textarea {
+            width: 100%;
+            height: 250px;
+            background-color: #faf7f0;
+            border: 1px solid var(--border-classic);
+            border-radius: 4px;
+            color: var(--text-dark);
+            padding: 18px;
+            font-family: 'Amiri', serif;
+            font-size: 17px;
+            line-height: 1.8;
+            resize: vertical;
+            outline: none;
+            transition: all 0.3s;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        textarea:focus {
+            border-color: var(--accent-gold);
+            background-color: #ffffff;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03), 0 0 8px rgba(197, 160, 89, 0.3);
+        }
+
+        /* شريط الأزرار */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: #f2e9dc;
+            border: 1px solid var(--border-classic);
+            color: var(--text-dark);
+            padding: 9px 16px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Amiri', serif;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-gold);
+            color: #fff;
+            border-color: var(--accent-gold);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-gold);
+            border-color: var(--accent-gold);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-gold-hover);
+        }
+
+        .btn-danger {
+            background-color: transparent;
+            color: #a94442;
+            border-color: #ebccd1;
+        }
+
+        .btn-danger:hover {
+            background-color: #f2dede;
+            color: #a94442;
+            border-color: #ebccd1;
+        }
+
+        .export-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-classic);
+        }
+
+        select {
+            background-color: #faf7f0;
+            color: var(--text-dark);
+            border: 1px solid var(--border-classic);
+            padding: 9px 14px;
+            border-radius: 3px;
+            font-family: 'Amiri', serif;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* التجاوب مع الشاشات الصغيرة (إخفاء الإعلانات الجانبية لتسهيل القراءة) */
+        @media (max-width: 1024px) {
+            .page-layout {
+                grid-template-columns: 1fr;
+            }
+            .ad-side {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-layout">
+        <!-- إعلان جانبي أيمـن -->
+        <aside class="ad-banner ad-side">
+            <span>مساحة إعلانية يمين<br>(AdSense 160x600)</span>
+        </aside>
+
+        <!-- المحتوى الرئيسي للموقع -->
+        <div class="container">
+            <!-- إعلان علوي -->
+            <div class="ad-banner ad-top">
+                <span>مساحة إعلانية علوية (Google AdSense 728x90)</span>
+            </div>
+
+            <header>
+                <h1>استوديو تحويل وتنسيق المستندات 📜</h1>
+                <p>منصتك الشاملة لتحرير النص، تنظيف المسافات، وتحويل الملفات بوضوح وعالية الجودة</p>
+            </header>
+
+            <main class="main-card">
+                <div class="user-welcome">
+                    ✍️ <strong>أهلاً بك في مساحتك الخاصة:</strong> اكتب أو الصق نصك أدناه، واستخدم الأدوات المتاحة للتعديل والتنسيق، ثم اختر الصيغة المناسبة لتحميل مستندك بجودة فائقة.
+                </div>
+
+                <!-- الإحصائيات -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number" id="word-count">0</div>
+                        <div class="label">عدد الكلمات</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="char-count">0</div>
+                        <div class="label">عدد الحروف</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="reading-time">0</div>
+                        <div class="label">دقيقة قراءة متوقعة</div>
+                    </div>
+                </div>
+
+                <!-- منطقة النص -->
+                <textarea id="text-input" placeholder="ابدأ كتابة مقالك، تقريرك، أو نصك هنا..."></textarea>
+
+                <!-- الأدوات -->
+                <div class="toolbar">
+                    <button class="btn" onclick="cleanExtraSpaces()">🧹 إزالة المسافات الزائدة</button>
+                    <button class="btn" onclick="toUpperCase()">🔠 تحويل للحروف الكبيرة</button>
+                    <button class="btn" onclick="toLowerCase()">🔡 تحويل للحروف الصغيرة</button>
+                    <button class="btn" onclick="copyText()">📋 نسخ النص</button>
+                    <button class="btn btn-danger" onclick="clearText()">🗑️ مسح الكل</button>
+                </div>
+
+                <!-- التصدير -->
+                <div class="export-group">
+                    <label for="export-format" style="font-weight: bold;">تصدير المستند كـ:</label>
+                    <select id="export-format">
+                        <option value="pdf">وثيقة واضحة (.pdf)</option>
+                        <option value="txt">ملف نصي (.txt)</option>
+                        <option value="html">صفحة منسقة (.html)</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="exportFile()">📥 تحميل المستند الآن</button>
+                </div>
+            </main>
+
+            <!-- إعلان سفلي -->
+            <div class="ad-banner ad-bottom">
+                <span>مساحة إعلانية سفلية (Google AdSense 728x90)</span>
+            </div>
+        </div>
+
+        <!-- إعلان جانبي أيسـر -->
+        <aside class="ad-banner ad-side">
+            <span>مساحة إعلانية يسار<br>(AdSense 160x600)</span>
+        </aside>
+    </div>
+
+    <script>
+        const textInput = document.getElementById('text-input');
+        const wordCountDisplay = document.getElementById('word-count');
+        const charCountDisplay = document.getElementById('char-count');
+        const readingTimeDisplay = document.getElementById('reading-time');
+
+        window.onload = () => {
+            const savedText = localStorage.getItem('user_text_studio');
+            if (savedText) {
+                textInput.value = savedText;
+                updateStats();
+            }
+        };
+
+        textInput.addEventListener('input', () => {
+            updateStats();
+            localStorage.setItem('user_text_studio', textInput.value);
+        });
+
+        function updateStats() {
+            const text = textInput.value.trim();
+            const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
+            const chars = text.length;
+            const readTime = Math.ceil(words / 200);
+
+            wordCountDisplay.innerText = words;
+            charCountDisplay.innerText = chars;
+            readingTimeDisplay.innerText = readTime;
+        }
+
+        function cleanExtraSpaces() {
+            textInput.value = textInput.value.replace(/\s+/g, ' ').trim();
+            updateStats();
+        }
+
+        function toUpperCase() {
+            textInput.value = textInput.value.toUpperCase();
+            updateStats();
+        }
+
+        function toLowerCase() {
+            textInput.value = textInput.value.toLowerCase();
+            updateStats();
+        }
+
+        function copyText() {
+            if (!textInput.value) return;
+            navigator.clipboard.writeText(textInput.value);
+            alert('تم نسخ النص إلى الحافظة بنجاح!');
+        }
+
+        function clearText() {
+            if (confirm('هل أنت تأكد من مسح النص بأكمله؟')) {
+                textInput.value = '';
+                localStorage.removeItem('user_text_studio');
+                updateStats();
+            }
+        }
+
+        function exportFile() {
+            const text = textInput.value;
+            if (!text) {
+                alert('يرجى كتابة أو إلصاق نص أولاً قبل تحميل المستند!');
+                return;
+            }
+
+            const format = document.getElementById('export-format').value;
+            const filename = `Document-${Date.now()}.${format}`;
+
+            if (format === 'txt') {
+                downloadBlob(text, filename, 'text/plain;charset=utf-8');
+            } 
+            else if (format === 'html') {
+                const htmlContent = `
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مستند منسق</title>
+    <style>
+        body { font-family: 'Amiri', serif; background: #fdfbf7; color: #2c2416; padding: 50px; line-height: 2; max-width: 800px; margin: auto; border: 1px solid #d4c5b0; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        p { white-space: pre-wrap; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h2>مستند مطبوع</h2>
+    <hr style="border-color: #c5a059;">
+    <p>${text}</p>
+</body>
+</html>`;
+                downloadBlob(htmlContent, filename, 'text/html;charset=utf-8');
+            } 
+            else if (format === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                doc.setFontSize(14);
+                const splitText = doc.splitTextToSize(text, 180);
+                
+                doc.text(splitText, 15, 20);
+                doc.save(filename);
+            }
+        }
+
+        function downloadBlob(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+    </script>
+</body>
+</html>
